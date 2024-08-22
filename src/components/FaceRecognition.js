@@ -21,12 +21,13 @@ const FaceRecognition = () => {
       await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
       await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
       await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+      await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL); // Ensure SSD Mobilenet is loaded
       startVideo();
     };
 
     loadModels();
 
-    videoRef.current.addEventListener('play', async () => {
+    const handlePlay = async () => {
       const canvas = faceapi.createCanvasFromMedia(videoRef.current);
       canvasRef.current = canvas;
       document.body.append(canvas);
@@ -38,7 +39,8 @@ const FaceRecognition = () => {
       const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
 
       setInterval(async () => {
-        const detections = await faceapi.detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
+        const detections = await faceapi
+          .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
           .withFaceLandmarks()
           .withFaceDescriptors();
 
@@ -52,7 +54,13 @@ const FaceRecognition = () => {
           drawBox.draw(canvas);
         });
       }, 100);
-    });
+    };
+
+    videoRef.current?.addEventListener('play', handlePlay);
+
+    return () => {
+      videoRef.current?.removeEventListener('play', handlePlay);
+    };
   }, []);
 
   const loadLabeledImages = () => {
