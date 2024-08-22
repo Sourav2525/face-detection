@@ -69,9 +69,15 @@ const FaceRecognition = () => {
       labels.map(async (label) => {
         const descriptions = [];
         for (let i = 1; i <= 3; i++) {
-          const img = await faceapi.fetchImage(`/labeled_images/${label}/${i}.jpg`);
-          const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
-          descriptions.push(detections.descriptor);
+          const imageUrl = `/labeled_images/${label}/${i}.jpg`;
+          try {
+            console.log(`Fetching image from URL: ${imageUrl}`);
+            const img = await faceapi.fetchImage(imageUrl);
+            const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+            descriptions.push(detections.descriptor);
+          } catch (error) {
+            console.error(`Error fetching or processing image at ${imageUrl}: `, error);
+          }
         }
         return new faceapi.LabeledFaceDescriptors(label, descriptions);
       })
