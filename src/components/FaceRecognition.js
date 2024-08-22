@@ -69,7 +69,7 @@ const FaceRecognition = () => {
       labels.map(async (label) => {
         const descriptions = [];
         for (let i = 1; i < 2; i++) {
-          const imageUrl = `/labeled_images/${label}/${i}.jpg`;
+          const imageUrl = `${window.location.origin}/labeled_images/${label}/${i}.jpg`;
           console.log('imageUrl: ', imageUrl);
           try {
             console.log(`Fetching image from URL: ${imageUrl}`);
